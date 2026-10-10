@@ -51,14 +51,14 @@ window.glass.glass-dark .glass-panel {
 }
 
 window.glass row .subtitle,
-window.glass preferencesgroup .description,
+window.glass .dimmed,
 window.glass .dim-label {
     opacity: 1;
     color: rgba(0, 0, 0, 0.72);
 }
 
 window.glass.glass-dark row .subtitle,
-window.glass.glass-dark preferencesgroup .description,
+window.glass.glass-dark .dimmed,
 window.glass.glass-dark .dim-label {
     color: rgba(255, 255, 255, 0.78);
 }

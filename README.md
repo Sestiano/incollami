@@ -10,7 +10,7 @@ glass-style window that follows your GNOME colour scheme and accent colour.
   <img src="docs/screenshots/light.png" alt="Clipstory, light" width="380">
 </p>
 
-<sub>The screenshots were rendered over a coloured test background so that the transparency is visible.</sub>
+<sub>The screenshots show sample entries over a sample wallpaper, so that the transparency is visible.</sub>
 
 ## Features
 
