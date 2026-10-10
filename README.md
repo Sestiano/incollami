@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.svg" alt="Clipstory logo" width="96">
+</p>
+
 # Clipstory
 
 Clipboard history for GNOME on Wayland. Press **Super + V**, search what you copied, pick it, paste it.
@@ -146,12 +150,38 @@ Then log out and back in.
 
 ## Contributing
 
-Issues and pull requests are welcome. The guidelines are short: keep the code simple and
-idiomatic, write code, comments, logs and UI text in English, and use no emojis.
+Issues and pull requests are welcome.
 
-By submitting a contribution you agree that it is licensed under the same terms as the project
-(GPL-3.0-or-later). Please do not submit code you do not have the right to share, or code copied
-from a source with an incompatible licence.
+**Guidelines**
+
+- Keep the code simple and idiomatic: ES modules for the extension, Python 3 with PyGObject for the window.
+- Code, comments, logs and UI text are in English, with no emojis. Issues and discussions can be in English or Italian.
+- Keep each pull request to one change and describe it; for a visual change, add a screenshot.
+- By submitting a contribution you agree that it is licensed under the same terms as the project
+  (GPL-3.0-or-later). Please do not submit code you do not have the right to share, or code copied
+  from a source with an incompatible licence.
+
+**Trying a change**
+
+```
+git clone https://github.com/Sestiano/clipstory.git
+cd clipstory
+./install.sh      # copies the files to ~/.local/share/gnome-shell/extensions
+```
+
+- A change to `extension/main.py` (the window) applies the next time you press `Super + V`, after you run
+  `./install.sh` again.
+- A change to `extension/extension.js` (the part inside GNOME Shell) needs a logout and login, because
+  Wayland cannot reload an extension.
+- To see the window without touching your real history, run it with a throwaway home folder:
+  `HOME=$(mktemp -d) python3 extension/main.py`.
+- Errors from both parts end up in the system log:
+  `journalctl --user -b -o cat | grep -i clipstory`.
+
+There are no automated tests yet. If you add a feature, say how you tried it; tests are welcome.
+
+**Reporting a bug.** Please include your GNOME version (`gnome-shell --version`), the output of
+`gnome-extensions info clipstory@seb.local` and any lines from the log above.
 
 ## Licence
 
