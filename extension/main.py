@@ -42,6 +42,45 @@ window.glass.background {
     background-color: transparent;
 }
 
+window.glass .glass-panel {
+    color: #000000;
+}
+
+window.glass.glass-dark .glass-panel {
+    color: #ffffff;
+}
+
+window.glass row .subtitle,
+window.glass preferencesgroup .description,
+window.glass .dim-label {
+    opacity: 1;
+    color: rgba(0, 0, 0, 0.72);
+}
+
+window.glass.glass-dark row .subtitle,
+window.glass.glass-dark preferencesgroup .description,
+window.glass.glass-dark .dim-label {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+window.glass row .title {
+    opacity: 1;
+    color: #000000;
+}
+
+window.glass.glass-dark row .title {
+    color: #ffffff;
+}
+
+window.glass entry.search text placeholder {
+    opacity: 1;
+    color: rgba(0, 0, 0, 0.58);
+}
+
+window.glass.glass-dark entry.search text placeholder {
+    color: rgba(255, 255, 255, 0.62);
+}
+
 window.glass.csd,
 window.glass.background.csd {
     border-radius: 14px;
@@ -150,7 +189,11 @@ window.glass .clip-title {
 
 window.glass .clip-subtitle {
     font-size: 11px;
-    color: alpha(@window_fg_color, 0.55);
+    color: rgba(0, 0, 0, 0.72);
+}
+
+window.glass.glass-dark .clip-subtitle {
+    color: rgba(255, 255, 255, 0.78);
 }
 
 window.glass row.clip-row:selected .clip-subtitle {
@@ -189,14 +232,22 @@ window.glass .section-header {
     margin: 8px 16px 2px 16px;
     font-size: 11px;
     font-weight: 600;
-    color: alpha(@window_fg_color, 0.5);
+    color: rgba(0, 0, 0, 0.68);
+}
+
+window.glass.glass-dark .section-header {
+    color: rgba(255, 255, 255, 0.72);
 }
 
 window.glass .clip-footer {
     padding: 7px 12px;
     border-top: 1px solid alpha(@window_fg_color, 0.08);
     font-size: 11px;
-    color: alpha(@window_fg_color, 0.5);
+    color: rgba(0, 0, 0, 0.72);
+}
+
+window.glass.glass-dark .clip-footer {
+    color: rgba(255, 255, 255, 0.80);
 }
 """
 
