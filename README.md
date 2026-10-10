@@ -147,9 +147,28 @@ Then log out and back in.
 ## Contributing
 
 Issues and pull requests are welcome. The guidelines are short: keep the code simple and
-idiomatic, write code, comments, logs and UI text in English, use no emojis, and check that any
-code you add can be distributed under the project licence.
+idiomatic, write code, comments, logs and UI text in English, and use no emojis.
+
+By submitting a contribution you agree that it is licensed under the same terms as the project
+(GPL-3.0-or-later). Please do not submit code you do not have the right to share, or code copied
+from a source with an incompatible licence.
 
 ## Licence
 
-GPL-3.0-or-later. See [LICENSE](LICENSE).
+Copyright (C) 2026 Sebastiano Franchini.
+
+Clipstory is free software, released under the **GNU General Public License, version 3 or, at your
+option, any later version** (GPL-3.0-or-later). The full text is in [LICENSE](LICENSE).
+
+In short:
+
+- You may use, study, share and modify it, also at work and also commercially.
+- If you distribute a modified version, or include it in something you distribute or sell, you must
+  release your complete source under the same licence, keep the copyright notices and mark your
+  changes. Nobody can take this code, close it and sell it as proprietary software.
+- It is provided **without any warranty**, and the author is **not liable** for any damage that comes
+  from using it (sections 15 and 16 of the licence). Note in particular that it stores what you copy,
+  passwords included, on your computer; see "Your data and privacy".
+
+Clipstory uses GTK 4, libadwaita and PyGObject (LGPL-2.1-or-later) and runs inside GNOME Shell
+(GPL-2.0-or-later). None of their code is included in this repository.
