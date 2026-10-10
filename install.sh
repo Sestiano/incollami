@@ -2,9 +2,9 @@
 # Copyright (C) 2026 Sebastiano Franchini
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Clipstory installer. Installs for the current user only, no root needed.
+# Incollami installer. Installs for the current user only, no root needed.
 #
-#   curl -fsSL https://raw.githubusercontent.com/Sestiano/clipstory/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Sestiano/incollami/main/install.sh | bash
 #
 # From a clone of the repository:
 #   ./install.sh [--keep-super-v] [--uninstall [--purge]] [--help]
@@ -13,13 +13,16 @@
 # change anything that is already in place.
 set -euo pipefail
 
-REPO="${CLIPSTORY_REPO:-Sestiano/clipstory}"
-REF="${CLIPSTORY_REF:-main}"
-UUID="clipstory@seb.local"
+REPO="${INCOLLAMI_REPO:-Sestiano/incollami}"
+REF="${INCOLLAMI_REF:-main}"
+UUID="incollami@sestiano.github.io"
 
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 EXT_DIR="$DATA_HOME/gnome-shell/extensions/$UUID"
-DATA_DIR="$DATA_HOME/clipstory"
+DATA_DIR="$DATA_HOME/incollami"
+LEGACY_UUID="clipstory@seb.local"
+LEGACY_EXT_DIR="$DATA_HOME/gnome-shell/extensions/$LEGACY_UUID"
+LEGACY_DATA_DIR="$DATA_HOME/clipstory"
 BACKUP_FILE="$DATA_DIR/.toggle-message-tray.orig"
 TRAY_SCHEMA="org.gnome.shell.keybindings"
 TRAY_KEY="toggle-message-tray"
@@ -44,13 +47,13 @@ usage() {
     cat <<EOF
 Usage: install.sh [options]
 
-  (no options)      Install or update Clipstory for the current user.
+  (no options)      Install or update Incollami for the current user.
   --keep-super-v    Do not take Super+V away from the GNOME notification shortcut.
-  --uninstall       Remove Clipstory and restore the Super+V shortcut.
+  --uninstall       Remove Incollami and restore the Super+V shortcut.
   --purge           With --uninstall, also delete the clipboard history and images.
   --help            Show this help.
 
-Environment: CLIPSTORY_REPO (user/repo) and CLIPSTORY_REF (branch or tag) select
+Environment: INCOLLAMI_REPO (user/repo) and INCOLLAMI_REF (branch or tag) select
 the source used when the script is run through curl.
 EOF
 }
@@ -94,7 +97,7 @@ list_contains() {
 }
 
 do_uninstall() {
-    say "Removing Clipstory"
+    say "Removing Incollami"
     if [[ -d "$EXT_DIR" ]]; then
         rm -rf "$EXT_DIR"
         note "removed $EXT_DIR"
@@ -127,8 +130,8 @@ resolve_source() {
         return
     fi
 
-    command -v curl >/dev/null 2>&1 || die "curl is required to download Clipstory"
-    command -v tar  >/dev/null 2>&1 || die "tar is required to unpack Clipstory"
+    command -v curl >/dev/null 2>&1 || die "curl is required to download Incollami"
+    command -v tar  >/dev/null 2>&1 || die "tar is required to unpack Incollami"
     WORK_DIR="$(mktemp -d)"
     trap 'rm -rf "$WORK_DIR"' EXIT
     say "Downloading $REPO ($REF)"
@@ -144,7 +147,7 @@ check_requirements() {
         version="$(gnome-shell --version | grep -oE '[0-9]+(\.[0-9]+)*' | head -1)"
         major="${version%%.*}"
         if [[ "$major" -lt 45 ]]; then
-            die "GNOME Shell $version is too old: Clipstory needs 45 or newer"
+            die "GNOME Shell $version is too old: Incollami needs 45 or newer"
         fi
         note "GNOME Shell $version"
     else
@@ -183,10 +186,27 @@ free_super_v() {
     fi
 }
 
+# The project was first called Clipstory: move an earlier installation over to the new names.
+migrate_legacy() {
+    if [[ -d "$LEGACY_EXT_DIR" ]]; then
+        rm -rf "$LEGACY_EXT_DIR"
+        note "removed the old Clipstory extension"
+    fi
+    if list_contains org.gnome.shell enabled-extensions "$LEGACY_UUID"; then
+        edit_list org.gnome.shell enabled-extensions remove "$LEGACY_UUID"
+    fi
+    if [[ -d "$LEGACY_DATA_DIR" && ! -e "$DATA_DIR" ]]; then
+        mv "$LEGACY_DATA_DIR" "$DATA_DIR"
+        note "moved your history from $LEGACY_DATA_DIR to $DATA_DIR"
+    fi
+}
+
 do_install() {
     say "Checking requirements"
     check_requirements
     resolve_source
+
+    migrate_legacy
 
     say "Installing the extension to $EXT_DIR"
     mkdir -p "$EXT_DIR"

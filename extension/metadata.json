@@ -1,8 +1,8 @@
 {
-  "name": "Clipstory",
-  "description": "Clipboard history for GNOME on Wayland: text and images, search, pinning and a glass-style window on Super+V.",
-  "uuid": "clipstory@seb.local",
+  "name": "Incollami",
+  "description": "Incollami (paste me) - clipboard history for GNOME on Wayland. Text and images, search, pinning, and a glass-style window on Super+V.",
+  "uuid": "incollami@sestiano.github.io",
   "version-name": "1.0.0",
-  "url": "https://github.com/Sestiano/clipstory",
+  "url": "https://github.com/Sestiano/incollami",
   "shell-version": ["45", "46", "47", "48", "49", "50"]
 }

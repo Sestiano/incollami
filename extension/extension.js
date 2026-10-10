@@ -10,12 +10,12 @@ import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 
-const DATA_DIR = GLib.get_home_dir() + '/.local/share/clipstory';
+const DATA_DIR = GLib.get_home_dir() + '/.local/share/incollami';
 const HISTORY_PATH = DATA_DIR + '/history.json';
 const CURRENT_PATH = DATA_DIR + '/current';
 const IMAGES_DIR = DATA_DIR + '/images';
 const THUMBS_DIR = DATA_DIR + '/thumbs';
-const APP_ID = 'local.seb.clipstory';
+const APP_ID = 'io.github.sestiano.Incollami';
 const MAX_HISTORY = 50;
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 const PRIVATE_DIR_MODE = 0o700;
@@ -24,7 +24,7 @@ function itemKey(item) {
     return item.image !== undefined ? `image:${item.image}` : `text:${item.text}`;
 }
 
-export default class ClipstoryExtension {
+export default class IncollamiExtension {
     constructor(metadata) {
         this._metadata = metadata;
         this._selection = null;
@@ -59,9 +59,9 @@ export default class ClipstoryExtension {
         }
 
         // Top Panel Indicator
-        this._indicator = new PanelMenu.Button(0.0, 'Clipstory', true);
+        this._indicator = new PanelMenu.Button(0.0, 'Incollami', true);
         const iconFile = Gio.File.new_for_path(
-            GLib.build_filenamev([this._metadata.path, 'icons', 'clipstory-symbolic.svg']));
+            GLib.build_filenamev([this._metadata.path, 'icons', 'incollami-symbolic.svg']));
         const icon = new St.Icon({
             gicon: iconFile.query_exists(null)
                 ? new Gio.FileIcon({ file: iconFile })
@@ -83,7 +83,7 @@ export default class ClipstoryExtension {
             return Clutter.EVENT_PROPAGATE;
         });
 
-        Main.panel.addToStatusArea('clipstory', this._indicator);
+        Main.panel.addToStatusArea('incollami', this._indicator);
     }
 
     disable() {
@@ -141,7 +141,7 @@ export default class ClipstoryExtension {
                 file.replace_contents(bytes.get_data(), null, false, Gio.FileCreateFlags.PRIVATE, null);
             }
         } catch (e) {
-            console.error(`Clipstory: Error writing image: ${e}`);
+            console.error(`Incollami: Error writing image: ${e}`);
             return;
         }
         this._saveToHistory({ image: name });
@@ -156,7 +156,7 @@ export default class ClipstoryExtension {
                 return JSON.parse(decoder.decode(contents));
             }
         } catch (e) {
-            console.error(`Clipstory: Error reading history: ${e}`);
+            console.error(`Incollami: Error reading history: ${e}`);
         }
         return [];
     }
@@ -170,7 +170,7 @@ export default class ClipstoryExtension {
                 bytes.get_data(), null, false,
                 Gio.FileCreateFlags.REPLACE_DESTINATION | Gio.FileCreateFlags.PRIVATE, null);
         } catch (e) {
-            console.error(`Clipstory: Error writing current entry: ${e}`);
+            console.error(`Incollami: Error writing current entry: ${e}`);
         }
     }
 
@@ -217,7 +217,7 @@ export default class ClipstoryExtension {
                 contentBytes.get_data(), null, false,
                 Gio.FileCreateFlags.REPLACE_DESTINATION | Gio.FileCreateFlags.PRIVATE, null);
         } catch (e) {
-            console.error(`Clipstory: Error writing history: ${e}`);
+            console.error(`Incollami: Error writing history: ${e}`);
             return;
         }
 
@@ -242,7 +242,7 @@ export default class ClipstoryExtension {
                 }
                 enumerator.close(null);
             } catch (e) {
-                console.error(`Clipstory: Error cleaning ${dir}: ${e}`);
+                console.error(`Incollami: Error cleaning ${dir}: ${e}`);
             }
         }
     }
@@ -286,7 +286,7 @@ export default class ClipstoryExtension {
                 Gio.SubprocessFlags.NONE
             );
         } catch (e) {
-            console.error(`Clipstory: Failed to launch UI: ${e}`);
+            console.error(`Incollami: Failed to launch UI: ${e}`);
         }
     }
 
@@ -299,7 +299,7 @@ export default class ClipstoryExtension {
                 Gio.SubprocessFlags.NONE
             );
         } catch (e) {
-            console.error(`Clipstory: Failed to launch Settings: ${e}`);
+            console.error(`Incollami: Failed to launch Settings: ${e}`);
         }
     }
 }

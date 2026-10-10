@@ -13,7 +13,7 @@ gi.require_version('GdkPixbuf', '2.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib, Pango, Adw
 
-DATA_DIR = os.path.expanduser('~/.local/share/clipstory')
+DATA_DIR = os.path.expanduser('~/.local/share/incollami')
 HISTORY_FILE = os.path.join(DATA_DIR, 'history.json')
 SETTINGS_FILE = os.path.join(DATA_DIR, 'settings.json')
 CURRENT_FILE = os.path.join(DATA_DIR, 'current')
@@ -382,12 +382,12 @@ def save_settings(settings):
         print(f"Error saving settings: {e}")
 
 
-class ClipstorySettingsWindow(Adw.ApplicationWindow):
+class IncollamiSettingsWindow(Adw.ApplicationWindow):
     """Settings, a keyboard reference with the meaning of the markers, and an about page."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_title("Clipstory")
+        self.set_title("Incollami")
         self.set_default_size(540, 580)
         self.add_css_class("glass")
         style_manager = Adw.StyleManager.get_default()
@@ -424,7 +424,7 @@ class ClipstorySettingsWindow(Adw.ApplicationWindow):
 
         group_theme = Adw.PreferencesGroup()
         group_theme.set_title("Appearance")
-        group_theme.set_description("Clipstory can follow the GNOME colour scheme or stay light or dark.")
+        group_theme.set_description("Incollami can follow the GNOME colour scheme or stay light or dark.")
         page.add(group_theme)
 
         model = Gtk.StringList.new(["System", "Light", "Dark"])
@@ -440,8 +440,8 @@ class ClipstorySettingsWindow(Adw.ApplicationWindow):
         group_data.set_description("Everything stays on this computer. Nothing is sent over the network.")
         page.add(group_data)
         self.add_rows(group_data, [
-            ("History", "~/.local/share/clipstory/history.json (the last 50 entries; pinned entries are always kept)"),
-            ("Images", "~/.local/share/clipstory/images, with small previews in thumbs"),
+            ("History", "~/.local/share/incollami/history.json (the last 50 entries; pinned entries are always kept)"),
+            ("Images", "~/.local/share/incollami/images, with small previews in thumbs"),
             ("Privacy", "Only you can read these files. Copied passwords are stored too, so clear the history if needed."),
         ])
         return page
@@ -482,7 +482,7 @@ class ClipstorySettingsWindow(Adw.ApplicationWindow):
         page = Adw.PreferencesPage()
 
         group = Adw.PreferencesGroup()
-        group.set_title("Clipstory")
+        group.set_title("Incollami")
         group.set_description("Clipboard history for GNOME on Wayland. Text and images, search, pinning.")
         page.add(group)
         self.add_rows(group, [
@@ -490,7 +490,7 @@ class ClipstorySettingsWindow(Adw.ApplicationWindow):
                              "This window, opened with Super + V, lets you search it and copy an entry back."),
             ("Limits", "Choosing an entry puts it in the clipboard; paste it yourself with Ctrl + V. "
                        "Wayland does not allow an app to type into another one."),
-            ("Source and licence", "github.com/Sestiano/clipstory, GPL-3.0-or-later"),
+            ("Source and licence", "github.com/Sestiano/incollami, GPL-3.0-or-later"),
         ])
         return page
 
@@ -511,10 +511,10 @@ class ClipstorySettingsWindow(Adw.ApplicationWindow):
         save_settings(self.settings)
 
 
-class ClipstoryWindow(Adw.ApplicationWindow):
+class IncollamiWindow(Adw.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.set_title("Clipboard History")
+        self.set_title("Incollami")
         self.set_default_size(400, -1)
         self.add_css_class("glass")
         style_manager = Adw.StyleManager.get_default()
@@ -927,9 +927,9 @@ class ClipstoryWindow(Adw.ApplicationWindow):
         GLib.timeout_add(500, self.get_application().quit)
 
 
-class ClipstoryApp(Adw.Application):
+class IncollamiApp(Adw.Application):
     def __init__(self):
-        super().__init__(application_id="local.seb.clipstory",
+        super().__init__(application_id="io.github.sestiano.Incollami",
                          flags=Gio.ApplicationFlags.FLAGS_NONE)
 
     def do_startup(self):
@@ -957,12 +957,12 @@ class ClipstoryApp(Adw.Application):
         win = self.props.active_window
         if not win:
             if SHOW_SETTINGS:
-                win = ClipstorySettingsWindow(application=self)
+                win = IncollamiSettingsWindow(application=self)
             else:
-                win = ClipstoryWindow(application=self)
+                win = IncollamiWindow(application=self)
         win.present()
 
 
 if __name__ == '__main__':
-    app = ClipstoryApp()
+    app = IncollamiApp()
     sys.exit(app.run(sys.argv))

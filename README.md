@@ -1,17 +1,19 @@
 <p align="center">
-  <img src="docs/logo.svg" alt="Clipstory logo" width="96">
+  <img src="docs/logo.svg" alt="Incollami logo" width="96">
 </p>
 
-# Clipstory
+# Incollami
 
 Clipboard history for GNOME on Wayland. Press **Super + V**, search what you copied, pick it, paste it.
+
+*Incollami* is Italian for "paste me".
 
 It remembers text and images, lets you pin the entries you reuse, and opens in a translucent
 glass-style window that follows your GNOME colour scheme and accent colour.
 
 <p align="center">
-  <img src="docs/screenshots/dark.png" alt="Clipstory, dark" width="380">
-  <img src="docs/screenshots/light.png" alt="Clipstory, light" width="380">
+  <img src="docs/screenshots/dark.png" alt="Incollami, dark" width="380">
+  <img src="docs/screenshots/light.png" alt="Incollami, light" width="380">
 </p>
 
 <sub>The screenshots show sample entries over a sample wallpaper, so that the transparency is visible.</sub>
@@ -46,21 +48,24 @@ glass-style window that follows your GNOME colour scheme and accent colour.
 One command, for your user only (no `sudo`):
 
 ```
-curl -fsSL https://raw.githubusercontent.com/Sestiano/clipstory/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Sestiano/incollami/main/install.sh | bash
 ```
 
 Or from a clone:
 
 ```
-git clone https://github.com/Sestiano/clipstory.git
-cd clipstory
+git clone https://github.com/Sestiano/incollami.git
+cd incollami
 ./install.sh
 ```
 
 The installer checks the requirements, copies the extension to
-`~/.local/share/gnome-shell/extensions/clipstory@seb.local`, enables it, and frees `Super + V`
+`~/.local/share/gnome-shell/extensions/incollami@sestiano.github.io`, enables it, and frees `Super + V`
 from the GNOME notification list (the list stays on `Super + M`). To keep the notification
 shortcut as it is, use `./install.sh --keep-super-v`.
+
+If you installed the earlier version, which was called Clipstory, the installer removes the old
+extension and moves your history to the new folder.
 
 **Then log out and back in.** On Wayland GNOME loads a new extension only when you log in.
 After that, copy something and press `Super + V`. Run the installer again at any time to update.
@@ -82,8 +87,8 @@ Right-click the icon in the top bar to open the settings. They have the same gla
 include this table and an explanation of the dots:
 
 <p align="center">
-  <img src="docs/screenshots/settings-dark.png" alt="Clipstory settings, dark" width="380">
-  <img src="docs/screenshots/settings-light.png" alt="Clipstory settings, light" width="380">
+  <img src="docs/screenshots/settings-dark.png" alt="Incollami settings, dark" width="380">
+  <img src="docs/screenshots/settings-light.png" alt="Incollami settings, light" width="380">
 </p>
 
 
@@ -95,7 +100,7 @@ Entries are grouped under **Pinned** and **Recent**. The history keeps the last 
 
 ## Your data and privacy
 
-Everything is kept in `~/.local/share/clipstory`, readable only by you:
+Everything is kept in `~/.local/share/incollami`, readable only by you:
 
 | Path | Content |
 |---|---|
@@ -106,7 +111,7 @@ Everything is kept in `~/.local/share/clipstory`, readable only by you:
 | `settings.json` | Your theme choice |
 | `grain.png`, `grain-light.png` | The noise tiles used by the glass look |
 
-Clipstory never uses the network. It does store whatever you copy, **including passwords copied
+Incollami never uses the network. It does store whatever you copy, **including passwords copied
 from a password manager**. Delete an entry with `Delete`, or remove `history.json` and `images/` to
 clear everything. Images over 20 MB are ignored.
 
@@ -128,8 +133,8 @@ that file. The details, including why it is built this way, are in
 ## Troubleshooting
 
 - **Nothing happens on `Super + V`, and there is no icon in the top bar.** Log out and back in
-  after installing. Then check the extension: `gnome-extensions info clipstory@seb.local`. The state
-  should be `ACTIVE`. If it shows `ERROR`, look at the log: `journalctl --user -b -o cat | grep -i clipstory`.
+  after installing. Then check the extension: `gnome-extensions info incollami@sestiano.github.io`. The state
+  should be `ACTIVE`. If it shows `ERROR`, look at the log: `journalctl --user -b -o cat | grep -i incollami`.
 - **`Super + V` still opens the notification list.** Another shortcut is using it. Check
   `gsettings get org.gnome.shell.keybindings toggle-message-tray`; it should be `['<Super>m']`.
   Running `./install.sh` again fixes it.
@@ -164,8 +169,8 @@ Issues and pull requests are welcome.
 **Trying a change**
 
 ```
-git clone https://github.com/Sestiano/clipstory.git
-cd clipstory
+git clone https://github.com/Sestiano/incollami.git
+cd incollami
 ./install.sh      # copies the files to ~/.local/share/gnome-shell/extensions
 ```
 
@@ -176,18 +181,18 @@ cd clipstory
 - To see the window without touching your real history, run it with a throwaway home folder:
   `HOME=$(mktemp -d) python3 extension/main.py`.
 - Errors from both parts end up in the system log:
-  `journalctl --user -b -o cat | grep -i clipstory`.
+  `journalctl --user -b -o cat | grep -i incollami`.
 
 There are no automated tests yet. If you add a feature, say how you tried it; tests are welcome.
 
 **Reporting a bug.** Please include your GNOME version (`gnome-shell --version`), the output of
-`gnome-extensions info clipstory@seb.local` and any lines from the log above.
+`gnome-extensions info incollami@sestiano.github.io` and any lines from the log above.
 
 ## Licence
 
 Copyright (C) 2026 Sebastiano Franchini.
 
-Clipstory is free software, released under the **GNU General Public License, version 3 or, at your
+Incollami is free software, released under the **GNU General Public License, version 3 or, at your
 option, any later version** (GPL-3.0-or-later). The full text is in [LICENSE](LICENSE).
 
 In short:
@@ -200,5 +205,5 @@ In short:
   from using it (sections 15 and 16 of the licence). Note in particular that it stores what you copy,
   passwords included, on your computer; see "Your data and privacy".
 
-Clipstory uses GTK 4, libadwaita and PyGObject (LGPL-2.1-or-later) and runs inside GNOME Shell
+Incollami uses GTK 4, libadwaita and PyGObject (LGPL-2.1-or-later) and runs inside GNOME Shell
 (GPL-2.0-or-later). None of their code is included in this repository.

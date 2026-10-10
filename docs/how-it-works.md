@@ -1,11 +1,11 @@
-# How Clipstory works
+# How Incollami works
 
-Clipstory is two small programs that share a folder of files.
+Incollami is two small programs that share a folder of files.
 
 ```
  GNOME Shell                                   your session
 ┌───────────────────────────────┐             ┌──────────────────────────────┐
-│ extension.js  (always running)│  writes     │ ~/.local/share/clipstory/    │
+│ extension.js  (always running)│  writes     │ ~/.local/share/incollami/    │
 │  - watches the clipboard      │ ──────────▶ │   history.json  images/ ...  │
 │  - owns the Super+V shortcut  │             └──────────────────────────────┘
 │  - shows the top-bar icon     │                       ▲  reads / edits
@@ -42,8 +42,8 @@ takes about a tenth of a second.
   `toggle-message-tray` shortcut, otherwise the two would compete.
 - **Focus.** GNOME can be set to "focus follows mouse", and in that mode a new window only receives
   the keyboard if the pointer is over it. After launching `main.py` the extension waits for its window
-  and activates it explicitly (matching the application id `local.seb.clipstory`).
-- **The icon.** `icons/clipstory-symbolic.svg` is a symbolic icon (filled shapes only, so the shell can
+  and activates it explicitly (matching the application id `io.github.sestiano.Incollami`).
+- **The icon.** `icons/incollami-symbolic.svg` is a symbolic icon (filled shapes only, so the shell can
   recolour it). Left click opens the history, right click opens the settings.
 - **Writes are private and atomic.** Files are created with mode `600` in a folder with mode `700`,
   and replaced with a temporary file, so a crash cannot leave a half-written history.
@@ -86,7 +86,7 @@ The values are in the `GLASS_CSS` string at the top of `main.py`.
 | `extension/extension.js` | Shell part: clipboard watcher, shortcut, icon, launches the window |
 | `extension/main.py` | The history window and the settings window |
 | `extension/metadata.json` | Extension description, id and supported GNOME versions |
-| `extension/icons/clipstory-symbolic.svg` | Top-bar icon |
+| `extension/icons/incollami-symbolic.svg` | Top-bar icon |
 | `install.sh` | Per-user installer and uninstaller |
 
 ## Data format
