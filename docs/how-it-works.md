@@ -43,6 +43,10 @@ takes about a tenth of a second.
 - **Focus.** GNOME can be set to "focus follows mouse", and in that mode a new window only receives
   the keyboard if the pointer is over it. After launching `main.py` the extension waits for its window
   and activates it explicitly (matching the application id `io.github.sestiano.Incollami`).
+- **Showing or hiding the icon.** The window writes `show_indicator` to `settings.json`; the extension
+  watches that file and adds or removes the top bar icon at once. The same settings can be opened from the
+  gear in the window, with `Ctrl` + `,`, or from the desktop entry that the installer puts in
+  `~/.local/share/applications`.
 - **The icon.** `icons/incollami-symbolic.svg` is a symbolic icon (filled shapes only, so the shell can
   recolour it). Left click opens the history, right click opens the settings.
 - **Writes are private and atomic.** Files are created with mode `600` in a folder with mode `700`,

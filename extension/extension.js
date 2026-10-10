@@ -13,6 +13,7 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 const DATA_DIR = GLib.get_home_dir() + '/.local/share/incollami';
 const HISTORY_PATH = DATA_DIR + '/history.json';
 const CURRENT_PATH = DATA_DIR + '/current';
+const SETTINGS_PATH = DATA_DIR + '/settings.json';
 const IMAGES_DIR = DATA_DIR + '/images';
 const THUMBS_DIR = DATA_DIR + '/thumbs';
 const APP_ID = 'io.github.sestiano.Incollami';
@@ -32,6 +33,8 @@ export default class IncollamiExtension {
         this._actionId = Meta.KeyBindingAction.NONE;
         this._handlerId = 0;
         this._indicator = null;
+        this._settingsMonitor = null;
+        this._settingsChangedId = 0;
         this._mapId = 0;
         this._mapTimeoutId = 0;
     }
@@ -58,7 +61,45 @@ export default class IncollamiExtension {
             });
         }
 
-        // Top Panel Indicator
+        // Top bar icon: shown unless the user turned it off in the settings window.
+        GLib.mkdir_with_parents(DATA_DIR, PRIVATE_DIR_MODE);
+        this._settingsMonitor = Gio.File.new_for_path(SETTINGS_PATH).monitor_file(Gio.FileMonitorFlags.NONE, null);
+        this._settingsChangedId = this._settingsMonitor.connect('changed', (monitor, file, other, eventType) => {
+            if (eventType === Gio.FileMonitorEvent.CHANGES_DONE_HINT ||
+                eventType === Gio.FileMonitorEvent.CREATED ||
+                eventType === Gio.FileMonitorEvent.DELETED) {
+                this._applyIndicatorSetting();
+            }
+        });
+        this._applyIndicatorSetting();
+    }
+
+    _indicatorWanted() {
+        try {
+            const file = Gio.File.new_for_path(SETTINGS_PATH);
+            if (file.query_exists(null)) {
+                const [, contents] = file.load_contents(null);
+                const settings = JSON.parse(new TextDecoder('utf-8').decode(contents));
+                return settings.show_indicator !== false;
+            }
+        } catch (e) {
+            // A half-written file: the monitor fires again when the write is complete.
+        }
+        return true;
+    }
+
+    _applyIndicatorSetting() {
+        if (this._indicatorWanted()) {
+            this._showIndicator();
+        } else {
+            this._hideIndicator();
+        }
+    }
+
+    _showIndicator() {
+        if (this._indicator) {
+            return;
+        }
         this._indicator = new PanelMenu.Button(0.0, 'Incollami', true);
         const iconFile = Gio.File.new_for_path(
             GLib.build_filenamev([this._metadata.path, 'icons', 'incollami-symbolic.svg']));
@@ -70,7 +111,7 @@ export default class IncollamiExtension {
         });
         this._indicator.add_child(icon);
 
-        // Open UI when indicator is clicked
+        // Left click opens the history, right click the settings.
         this._indicator.connect('button-press-event', (actor, event) => {
             const button = event.get_button();
             if (button === Clutter.BUTTON_PRIMARY) {
@@ -84,6 +125,13 @@ export default class IncollamiExtension {
         });
 
         Main.panel.addToStatusArea('incollami', this._indicator);
+    }
+
+    _hideIndicator() {
+        if (this._indicator) {
+            this._indicator.destroy();
+            this._indicator = null;
+        }
     }
 
     disable() {
@@ -104,10 +152,14 @@ export default class IncollamiExtension {
             this._actionId = Meta.KeyBindingAction.NONE;
         }
 
-        if (this._indicator) {
-            this._indicator.destroy();
-            this._indicator = null;
+        if (this._settingsMonitor) {
+            this._settingsMonitor.disconnect(this._settingsChangedId);
+            this._settingsMonitor.cancel();
+            this._settingsMonitor = null;
+            this._settingsChangedId = 0;
         }
+
+        this._hideIndicator();
     }
 
     _onClipboardChanged() {

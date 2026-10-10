@@ -67,6 +67,8 @@ shortcut as it is, use `./install.sh --keep-super-v`.
 If you installed the earlier version, which was called Clipstory, the installer removes the old
 extension and moves your history to the new folder.
 
+The installer also adds an **Incollami** entry to the application grid, which opens the settings.
+
 **Then log out and back in.** On Wayland GNOME loads a new extension only when you log in.
 After that, copy something and press `Super + V`. Run the installer again at any time to update.
 
@@ -82,6 +84,7 @@ After that, copy something and press `Super + V`. Run the installer again at any
 | `Ctrl` + `↑` / `Ctrl` + `↓` | Move a pinned entry |
 | `Delete` | Delete the entry (only while the search field is empty) |
 | `Esc` | Close |
+| `Ctrl` + `,`, or the gear button | Open the settings |
 
 Right-click the icon in the top bar to open the settings. They have the same glass style and also
 include this table and an explanation of the dots:
@@ -97,6 +100,11 @@ include this table and an explanation of the dots:
   selected row it is drawn as a ring.
 
 Entries are grouped under **Pinned** and **Recent**. The history keeps the last 50 entries.
+
+**Hiding the top bar icon.** If you prefer a clean bar, turn the icon off in the settings. Nothing else
+changes: `Super + V` still opens the history, and you can reach the settings from the gear button in
+the corner of the history window, with `Ctrl` + `,`, or from the **Incollami** entry in the application
+grid (it uses the logo as its icon).
 
 ## Your data and privacy
 

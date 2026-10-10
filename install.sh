@@ -20,6 +20,11 @@ UUID="incollami@sestiano.github.io"
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 EXT_DIR="$DATA_HOME/gnome-shell/extensions/$UUID"
 DATA_DIR="$DATA_HOME/incollami"
+APP_ID="io.github.sestiano.Incollami"
+APPS_DIR="$DATA_HOME/applications"
+ICON_DIR="$DATA_HOME/icons/hicolor/scalable/apps"
+DESKTOP_FILE="$APPS_DIR/$APP_ID.desktop"
+ICON_FILE="$ICON_DIR/$APP_ID.svg"
 LEGACY_UUID="clipstory@seb.local"
 LEGACY_EXT_DIR="$DATA_HOME/gnome-shell/extensions/$LEGACY_UUID"
 LEGACY_DATA_DIR="$DATA_HOME/clipstory"
@@ -96,6 +101,38 @@ list_contains() {
     gsettings get "$1" "$2" | grep -qF "'$3'"
 }
 
+refresh_launcher_caches() {
+    update-desktop-database "$APPS_DIR" >/dev/null 2>&1 || true
+    gtk-update-icon-cache -f -t "$DATA_HOME/icons/hicolor" >/dev/null 2>&1 || true
+}
+
+# An entry in the application grid, so the settings can be opened even when the top bar icon is hidden.
+install_launcher() {
+    local logo="$SOURCE_DIR/../docs/logo.svg"
+    mkdir -p "$APPS_DIR" "$ICON_DIR"
+    if [[ -f "$logo" ]]; then
+        install -m 644 "$logo" "$ICON_FILE"
+    fi
+    cat > "$DESKTOP_FILE" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=Incollami
+Comment=Clipboard history: settings
+Exec=/usr/bin/python3 "$EXT_DIR/main.py" --settings
+Icon=$APP_ID
+Terminal=false
+Categories=Utility;GTK;
+StartupWMClass=$APP_ID
+Actions=History;
+
+[Desktop Action History]
+Name=Open the history
+Exec=/usr/bin/python3 "$EXT_DIR/main.py"
+DESKTOP
+    refresh_launcher_caches
+    note "added the Incollami entry to the application grid"
+}
+
 do_uninstall() {
     say "Removing Incollami"
     if [[ -d "$EXT_DIR" ]]; then
@@ -103,6 +140,8 @@ do_uninstall() {
         note "removed $EXT_DIR"
     fi
     edit_list org.gnome.shell enabled-extensions remove "$UUID"
+    rm -f "$DESKTOP_FILE" "$ICON_FILE"
+    refresh_launcher_caches
 
     if [[ -f "$BACKUP_FILE" ]]; then
         gsettings set "$TRAY_SCHEMA" "$TRAY_KEY" "$(cat "$BACKUP_FILE")"
@@ -214,6 +253,7 @@ do_install() {
     install -m 755 "$SOURCE_DIR/main.py" "$EXT_DIR/"
     mkdir -p "$EXT_DIR/icons"
     install -m 644 "$SOURCE_DIR"/icons/*.svg "$EXT_DIR/icons/"
+    install_launcher
 
     say "Enabling the extension"
     edit_list org.gnome.shell enabled-extensions add "$UUID"

@@ -28,6 +28,7 @@ THUMB_DISPLAY_WIDTH = 72
 THUMB_DISPLAY_HEIGHT = 48
 MAX_TEXT_CHARS = 200
 PRIVATE_DIR_MODE = 0o700
+APP_ID = "io.github.sestiano.Incollami"
 
 SHOW_SETTINGS = False
 if '--settings' in sys.argv:
@@ -239,6 +240,14 @@ window.glass.glass-dark .section-header {
     color: rgba(255, 255, 255, 0.72);
 }
 
+window.glass .clip-footer button {
+    min-width: 22px;
+    min-height: 22px;
+    padding: 2px;
+    color: inherit;
+    opacity: 0.85;
+}
+
 window.glass .clip-footer {
     padding: 7px 12px;
     border-top: 1px solid alpha(@window_fg_color, 0.08);
@@ -362,15 +371,19 @@ def load_thumbnail(name):
         return None
 
 
+DEFAULT_SETTINGS = {"theme": "system", "show_indicator": True}
+
+
 def load_settings():
+    settings = dict(DEFAULT_SETTINGS)
     if not os.path.exists(SETTINGS_FILE):
-        return {"theme": "system"}
+        return settings
     try:
         with open(SETTINGS_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            settings.update(json.load(f))
     except Exception as e:
         print(f"Error loading settings: {e}")
-        return {"theme": "system"}
+    return settings
 
 
 def save_settings(settings):
@@ -435,6 +448,17 @@ class IncollamiSettingsWindow(Adw.ApplicationWindow):
         self.combo_theme.connect("notify::selected", self.on_theme_changed)
         group_theme.add(self.combo_theme)
 
+        group_bar = Adw.PreferencesGroup()
+        group_bar.set_title("Top bar")
+        page.add(group_bar)
+        self.switch_indicator = Adw.SwitchRow(title="Show the icon in the top bar")
+        self.switch_indicator.set_subtitle(
+            "If you hide it, open the history with Super + V, and these settings with the gear button "
+            "in the history window, Ctrl + comma, or the Incollami entry in the application grid.")
+        self.switch_indicator.set_active(self.settings.get("show_indicator", True))
+        self.switch_indicator.connect("notify::active", self.on_indicator_changed)
+        group_bar.add(self.switch_indicator)
+
         group_data = Adw.PreferencesGroup()
         group_data.set_title("Your data")
         group_data.set_description("Everything stays on this computer. Nothing is sent over the network.")
@@ -458,6 +482,7 @@ class IncollamiSettingsWindow(Adw.ApplicationWindow):
             ("Choose an entry", "Up / Down"),
             ("Copy the entry", "Enter, or click it. Then paste with Ctrl + V where you want it"),
             ("Close", "Escape"),
+            ("Open the settings", "Ctrl + comma, the gear button, right click on the top bar icon, or the Incollami entry in the application grid"),
         ])
 
         group_manage = Adw.PreferencesGroup()
@@ -493,6 +518,10 @@ class IncollamiSettingsWindow(Adw.ApplicationWindow):
             ("Source and licence", "github.com/Sestiano/incollami, GPL-3.0-or-later"),
         ])
         return page
+
+    def on_indicator_changed(self, switch, param):
+        self.settings["show_indicator"] = switch.get_active()
+        save_settings(self.settings)
 
     def on_theme_changed(self, combo, param):
         selected = combo.get_selected()
@@ -549,8 +578,21 @@ class IncollamiWindow(Adw.ApplicationWindow):
 
         vbox.append(self.scrolled)
 
-        footer = Gtk.Label(label="\u2191 \u2193 select    \u21b5 copy    Ctrl \u21b5 pin    Del delete", xalign=0.5)
+        footer = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         footer.add_css_class("clip-footer")
+        hints = Gtk.Label(label="\u2191 \u2193 select    \u21b5 copy    Ctrl \u21b5 pin    Del delete", xalign=0.5)
+        hints.set_hexpand(True)
+        # An invisible spacer as wide as the button keeps the hints centred.
+        spacer = Gtk.Box()
+        spacer.set_size_request(26, -1)
+        settings_button = Gtk.Button.new_from_icon_name("emblem-system-symbolic")
+        settings_button.add_css_class("flat")
+        settings_button.set_focusable(False)
+        settings_button.set_tooltip_text("Settings (Ctrl + comma)")
+        settings_button.connect("clicked", lambda button: self.open_settings())
+        footer.append(spacer)
+        footer.append(hints)
+        footer.append(settings_button)
         vbox.append(footer)
 
         self.listbox = Gtk.ListBox()
@@ -644,8 +686,19 @@ class IncollamiWindow(Adw.ApplicationWindow):
         elif bottom > adjustment.get_value() + adjustment.get_page_size():
             adjustment.set_value(bottom - adjustment.get_page_size())
 
+    def open_settings(self):
+        """Show the settings window and close this one, keeping the application running."""
+        application = self.get_application()
+        self.handing_over = True
+        IncollamiSettingsWindow(application=application).present()
+        self.close()
+
     def on_key_pressed(self, controller, keyval, keycode, state):
         is_ctrl = (state & Gdk.ModifierType.CONTROL_MASK) != 0
+
+        if is_ctrl and keyval == Gdk.KEY_comma:
+            self.open_settings()
+            return True
 
         if keyval == Gdk.KEY_Escape:
             self.get_application().quit()
@@ -929,11 +982,12 @@ class IncollamiWindow(Adw.ApplicationWindow):
 
 class IncollamiApp(Adw.Application):
     def __init__(self):
-        super().__init__(application_id="io.github.sestiano.Incollami",
+        super().__init__(application_id=APP_ID,
                          flags=Gio.ApplicationFlags.FLAGS_NONE)
 
     def do_startup(self):
         Adw.Application.do_startup(self)
+        Gtk.Window.set_default_icon_name(APP_ID)
         settings = load_settings()
         theme = settings.get("theme", "system")
         style_manager = Adw.StyleManager.get_default()
